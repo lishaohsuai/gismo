@@ -5,6 +5,8 @@
 ## $IMAGE_NAME var is injected into the build so the tag is correct.
 echo "[***] Build hook starting..."
 
+cat "${0}"
+
 # $(echo "index.docker.io/user/respository" | cut -d '/' -f 3) = "repository"
 APPLICATION=$(echo "${DOCKER_REPO}" | cut -d '/' -f 3)
 
