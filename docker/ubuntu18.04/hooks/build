@@ -30,95 +30,95 @@ echo "[---] DESCRIPTION:            ${DESCRIPTION}"
 # Compiler setting
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    # *?(\-)clang3.5?(\-*))
+    # ${DOCKER_REPO}:*?(\-)clang3.5?(\-*))
     #     CC=clang-3.5
     #     CXX=clang++-3.5
     #     ;;
-    # *?(\-)clang3.6?(\-*))
+    # ${DOCKER_REPO}:*?(\-)clang3.6?(\-*))
     #     CC=clang-3.6
     #     CXX=clang++-3.6
     #     ;;
-    # *?(\-)clang3.7?(\-*))
+    # ${DOCKER_REPO}:*?(\-)clang3.7?(\-*))
     #     CC=clang-3.7
     #     CXX=clang++-3.7
     #     ;;
-    # *?(\-)clang3.8?(\-*))
+    # ${DOCKER_REPO}:*?(\-)clang3.8?(\-*))
     #     CC=clang-3.8
     #     CXX=clang++-3.8
     #     ;;
-    *?(\-)clang3.9?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang3.9?(\-*))
         CC=clang-3.9
         CXX=clang++-3.9
         ;;
-    *?(\-)clang4.0?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang4.0?(\-*))
         CC=clang-4.0
         CXX=clang++-4.0
         ;;
-    *?(\-)clang5.0?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang5.0?(\-*))
         CC=clang-5.0
         CXX=clang++-5.0
         ;;
-    *?(\-)clang6.0?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang6.0?(\-*))
         CC=clang-6.0
         CXX=clang++-6.0
         ;;
-    *?(\-)clang7?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang7?(\-*))
         CC=clang-7
         CXX=clang++-7
         ;;
-    *?(\-)clang8?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang8?(\-*))
         CC=clang-8
         CXX=clang++-8
         ;;
-    *?(\-)clang9?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang9?(\-*))
         CC=clang-9
         CXX=clang++-9
         ;;
-    # *?(\-)clang10?(\-*))
+    # ${DOCKER_REPO}:*?(\-)clang10?(\-*))
     #     CC=clang-10
     #     CXX=clang++-10
     #     ;;
-    # *?(\-)gcc4.7?(\-*))
+    # ${DOCKER_REPO}:*?(\-)gcc4.7?(\-*))
     #     CC=gcc-4.7
     #     CXX=g++-4.7
     #     FC=gfortran-4.7
     #     ;;
-    *?(\-)gcc4.8?(\-*))
+    ${DOCKER_REPO}:*?(\-)gcc4.8?(\-*))
         CC=gcc-4.8
         CXX=g++-4.8
         FC=gfortran-4.8
         ;;
-    # *?(\-)gcc4.9?(\-*))
+    # ${DOCKER_REPO}:*?(\-)gcc4.9?(\-*))
     #     CC=gcc-4.9
     #     CXX=g++-4.9
     #     FC=gfortran-4.9
     #     ;;
-    *?(\-)gcc5?(\-*))
+    ${DOCKER_REPO}:*?(\-)gcc5?(\-*))
         CC=gcc-5
         CXX=g++-5
         FC=gfortran-5
         ;;
-    *?(\-)gcc6?(\-*))
+    ${DOCKER_REPO}:*?(\-)gcc6?(\-*))
         CC=gcc-6
         CXX=g++-6
         FC=gfortran-6
         ;;    
-    *?(\-)gcc7?(\-*))
+    ${DOCKER_REPO}:*?(\-)gcc7?(\-*))
         CC=gcc-7
         CXX=g++-7
         FC=gfortran-7
         ;;
-    *?(\-)gcc8?(\-*))
+    ${DOCKER_REPO}:*?(\-)gcc8?(\-*))
         CC=gcc-8
         CXX=g++-8
         FC=gfortran-8
         ;;
-    # *?(\-)gcc9?(\-*))
+    # ${DOCKER_REPO}:*?(\-)gcc9?(\-*))
     #     CC=gcc-9
     #     CXX=g++-9
     #     FC=gfortran-9
     #     ;;
-    # *?(\-)gcc10?(\-*))
+    # ${DOCKER_REPO}:*?(\-)gcc10?(\-*))
     #     CC=gcc-10
     #     CXX=g++-10
     #     FC=gfortran-10
@@ -137,19 +137,19 @@ echo "[---] FC:                     ${FC}"
 # C++ standard
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)cxx11?(\-*))
+    ${DOCKER_REPO}:*?(\-)cxx11?(\-*))
         CMAKE_CXX_STANDARD=11
         ;;
-    *?(\-)cxx14?(\-*))
+    ${DOCKER_REPO}:*?(\-)cxx14?(\-*))
         CMAKE_CXX_STANDARD=14
         ;;
-    *?(\-)cxx17?(\-*))
+    ${DOCKER_REPO}:*?(\-)cxx17?(\-*))
         CMAKE_CXX_STANDARD=17
         ;;
-    *?(\-)cxx20?(\-*))
+    ${DOCKER_REPO}:*?(\-)cxx20?(\-*))
         CMAKE_CXX_STANDARD=20
         ;;
-    *?(\-)cxx98?(\-*))
+    ${DOCKER_REPO}:*?(\-)cxx98?(\-*))
         CMAKE_CXX_STANDARD=98
         ;;
     *)
@@ -164,16 +164,16 @@ echo "[---] CMAKE_CXX_STANDARD:     ${CMAKE_CXX_STANDARD}"
 # Build type
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)release?(\-*))
+    ${DOCKER_REPO}:*?(\-)release?(\-*))
         CMAKE_BUILD_TYPE=Release
         ;;
-    *?(\-)debug?(\-*))
+    ${DOCKER_REPO}:*?(\-)debug?(\-*))
         CMAKE_BUILD_TYPE=Debug
         ;;
-    *?(\-)debinfo?(\-*))
+    ${DOCKER_REPO}:*?(\-)debinfo?(\-*))
         CMAKE_BUILD_TYPE=RelWithDebInfo
         ;;
-    *?(\-)minsize?(\-*))
+    ${DOCKER_REPO}:*?(\-)minsize?(\-*))
         CMAKE_BUILD_TYPE=MinSizeRel
         ;;
     *)
@@ -188,142 +188,142 @@ echo "[---] CMAKE_BUILD_TYPE:       ${CMAKE_BUILD_TYPE}"
 # Target architecture
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)auto?(\-*))
+    ${DOCKER_REPO}:*?(\-)auto?(\-*))
         TARGET_ARCHITECTURE="auto"
         ;;
-    *?(\-)none?(\-*))
+    ${DOCKER_REPO}:*?(\-)none?(\-*))
         TARGET_ARCHITECTURE="none"
         ;;
-    *?(\-)generic?(\-*))
+    ${DOCKER_REPO}:*?(\-)generic?(\-*))
         TARGET_ARCHITECTURE="generic"
         ;;
-    *?(\-)core?(\-*))
+    ${DOCKER_REPO}:*?(\-)core?(\-*))
         TARGET_ARCHITECTURE="core"
         ;;
-    *?(\-)merom?(\-*))
+    ${DOCKER_REPO}:*?(\-)merom?(\-*))
         TARGET_ARCHITECTURE="merom"
         ;;
-    *?(\-)penryn?(\-*))
+    ${DOCKER_REPO}:*?(\-)penryn?(\-*))
         TARGET_ARCHITECTURE="penryn"
         ;;
-    *?(\-)nehalem?(\-*))
+    ${DOCKER_REPO}:*?(\-)nehalem?(\-*))
         TARGET_ARCHITECTURE="nehalem"
         ;;
-    *?(\-)westmere?(\-*))
+    ${DOCKER_REPO}:*?(\-)westmere?(\-*))
         TARGET_ARCHITECTURE="westmere"
         ;;
-    *?(\-)sandybridge?(\-*))
+    ${DOCKER_REPO}:*?(\-)sandybridge?(\-*))
         TARGET_ARCHITECTURE="sandybridge"
         ;;
-    *?(\-)ivybridge?(\-*))
+    ${DOCKER_REPO}:*?(\-)ivybridge?(\-*))
         TARGET_ARCHITECTURE="ivybridge"
         ;;
-    *?(\-)haswell?(\-*))
+    ${DOCKER_REPO}:*?(\-)haswell?(\-*))
         TARGET_ARCHITECTURE="haswell"
         ;;
-    *?(\-)broadwell?(\-*))
+    ${DOCKER_REPO}:*?(\-)broadwell?(\-*))
         TARGET_ARCHITECTURE="broadwell"
         ;;
-    *?(\-)skylake?(\-*))
+    ${DOCKER_REPO}:*?(\-)skylake?(\-*))
         TARGET_ARCHITECTURE="skylake"
         ;;
-    *?(\-)skylake-xeon?(\-*))
+    ${DOCKER_REPO}:*?(\-)skylake-xeon?(\-*))
         TARGET_ARCHITECTURE="skylake-xeon"
         ;;
-    *?(\-)kabylake?(\-*))
+    ${DOCKER_REPO}:*?(\-)kabylake?(\-*))
         TARGET_ARCHITECTURE="kabylake"
         ;;
-    *?(\-)cannonlake?(\-*))
+    ${DOCKER_REPO}:*?(\-)cannonlake?(\-*))
         TARGET_ARCHITECTURE="cannonlake"
         ;;
-    *?(\-)cascadelake?(\-*))
+    ${DOCKER_REPO}:*?(\-)cascadelake?(\-*))
         TARGET_ARCHITECTURE="cascadelake"
         ;;
-    *?(\-)cooperlake?(\-*))
+    ${DOCKER_REPO}:*?(\-)cooperlake?(\-*))
         TARGET_ARCHITECTURE="cooperlake"
         ;;
-    *?(\-)icelake?(\-*))
+    ${DOCKER_REPO}:*?(\-)icelake?(\-*))
         TARGET_ARCHITECTURE="icelake"
         ;;
-    *?(\-)icelake-xeon?(\-*))
+    ${DOCKER_REPO}:*?(\-)icelake-xeon?(\-*))
         TARGET_ARCHITECTURE="icelake-xeon"
         ;;
-    *?(\-)tigerlake?(\-*))
+    ${DOCKER_REPO}:*?(\-)tigerlake?(\-*))
         TARGET_ARCHITECTURE="tigerlake"
         ;;
-    *?(\-)alderlake?(\-*))
+    ${DOCKER_REPO}:*?(\-)alderlake?(\-*))
         TARGET_ARCHITECTURE="alderlake"
         ;;
-    *?(\-)sapphirerapids?(\-*))
+    ${DOCKER_REPO}:*?(\-)sapphirerapids?(\-*))
         TARGET_ARCHITECTURE="sapphirerapids"
         ;;
-    *?(\-)bonnell?(\-*))
+    ${DOCKER_REPO}:*?(\-)bonnell?(\-*))
         TARGET_ARCHITECTURE="bonnell"
         ;;
-    *?(\-)silvermont?(\-*))
+    ${DOCKER_REPO}:*?(\-)silvermont?(\-*))
         TARGET_ARCHITECTURE="silvermont"
         ;;
-    *?(\-)goldmont?(\-*))
+    ${DOCKER_REPO}:*?(\-)goldmont?(\-*))
         TARGET_ARCHITECTURE="goldmont"
         ;;
-    *?(\-)goldmont-plus?(\-*))
+    ${DOCKER_REPO}:*?(\-)goldmont-plus?(\-*))
         TARGET_ARCHITECTURE="goldmont-plus"
         ;;
-    *?(\-)tremont?(\-*))
+    ${DOCKER_REPO}:*?(\-)tremont?(\-*))
         TARGET_ARCHITECTURE="tremont"
         ;;
-    *?(\-)knl?(\-*))
+    ${DOCKER_REPO}:*?(\-)knl?(\-*))
         TARGET_ARCHITECTURE="knl"
         ;;
-    *?(\-)knm?(\-*))
+    ${DOCKER_REPO}:*?(\-)knm?(\-*))
         TARGET_ARCHITECTURE="knm"
         ;;
-    *?(\-)atom?(\-*))
+    ${DOCKER_REPO}:*?(\-)atom?(\-*))
         TARGET_ARCHITECTURE="atom"
         ;;
-    *?(\-)k8?(\-*))
+    ${DOCKER_REPO}:*?(\-)k8?(\-*))
         TARGET_ARCHITECTURE="k8"
         ;;
-    *?(\-)k8-sse3?(\-*))
+    ${DOCKER_REPO}:*?(\-)k8-sse3?(\-*))
         TARGET_ARCHITECTURE="k8-sse3"
         ;;
-    *?(\-)barcelona?(\-*))
+    ${DOCKER_REPO}:*?(\-)barcelona?(\-*))
         TARGET_ARCHITECTURE="barcelona"
         ;;
-    *?(\-)istanbul?(\-*))
+    ${DOCKER_REPO}:*?(\-)istanbul?(\-*))
         TARGET_ARCHITECTURE="istanbul"
         ;;
-    *?(\-)magny-cours?(\-*))
+    ${DOCKER_REPO}:*?(\-)magny-cours?(\-*))
         TARGET_ARCHITECTURE="magny-cours"
         ;;
-    *?(\-)bulldozer?(\-*))
+    ${DOCKER_REPO}:*?(\-)bulldozer?(\-*))
         TARGET_ARCHITECTURE="bulldozer"
         ;;
-    *?(\-)interlagos?(\-*))
+    ${DOCKER_REPO}:*?(\-)interlagos?(\-*))
         TARGET_ARCHITECTURE="interlagos"
         ;;
-    *?(\-)piledriver?(\-*))
+    ${DOCKER_REPO}:*?(\-)piledriver?(\-*))
         TARGET_ARCHITECTURE="piledriver"
         ;;
-    *?(\-)steamroller?(\-*))
+    ${DOCKER_REPO}:*?(\-)steamroller?(\-*))
         TARGET_ARCHITECTURE="steamroller"
         ;;
-    *?(\-)excavator?(\-*))
+    ${DOCKER_REPO}:*?(\-)excavator?(\-*))
         TARGET_ARCHITECTURE="excavator"
         ;;
-    *?(\-)amd14h?(\-*))
+    ${DOCKER_REPO}:*?(\-)amd14h?(\-*))
         TARGET_ARCHITECTURE="amd14h"
         ;;
-    *?(\-)amd16h?(\-*))
+    ${DOCKER_REPO}:*?(\-)amd16h?(\-*))
         TARGET_ARCHITECTURE="amd16h"
         ;;
-    *?(\-)zen3?(\-*))
+    ${DOCKER_REPO}:*?(\-)zen3?(\-*))
         TARGET_ARCHITECTURE="zen3"
         ;;
-    *?(\-)zen2?(\-*))
+    ${DOCKER_REPO}:*?(\-)zen2?(\-*))
         TARGET_ARCHITECTURE="zen2"
         ;;
-    *?(\-)zen?(\-*))
+    ${DOCKER_REPO}:*?(\-)zen?(\-*))
         TARGET_ARCHITECTURE="zen"
         ;;
     *)
@@ -337,7 +337,7 @@ echo "[---] TARGET_ARCHITECTURE:    ${TARGET_ARCHITECTURE}"
 # Build with Trilinos support
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)trilinos?(\-*))
+    ${DOCKER_REPO}:*?(\-)trilinos?(\-*))
         GISMO_WITH_TRILINOS=ON
         GISMO_WITH_MPI=ON
         ;;
@@ -350,10 +350,10 @@ shopt -u extglob;
 # Build with OpenMP support
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)clang?(\-*)|*?(\-)noomp?(\-*))
+    ${DOCKER_REPO}:*?(\-)clang?(\-*)|${DOCKER_REPO}:*?(\-)noomp?(\-*))
         GISMO_WITH_OPENMP=OFF
         ;;
-    *?(\-)omp?(\-*))
+    ${DOCKER_REPO}:*?(\-)omp?(\-*))
         GISMO_WITH_OPENMP=ON
         ;;
     *)
@@ -365,10 +365,10 @@ shopt -u extglob;
 # Build with MPI support
 shopt -s extglob;
 case "$IMAGE_NAME" in
-    *?(\-)nompi?(\-*))
+    ${DOCKER_REPO}:*?(\-)nompi?(\-*))
         GISMO_WITH_MPI=OFF
         ;;
-    *?(\-)mpi?(\-*))
+    ${DOCKER_REPO}:*?(\-)mpi?(\-*))
         GISMO_WITH_MPI=ON
         ;;
     *)
