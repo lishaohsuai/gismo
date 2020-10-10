@@ -2,6 +2,8 @@
 # hooks/build
 # https://docs.docker.com/docker-cloud/builds/advanced/
 
+
+echo ${BASH_VERSION}
 ## $IMAGE_NAME var is injected into the build so the tag is correct.
 echo "[***] Build hook starting..."
 
