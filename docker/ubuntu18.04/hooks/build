@@ -2,29 +2,35 @@
 # hooks/build
 # https://docs.docker.com/docker-cloud/builds/advanced/
 
-
-echo ${BASH_VERSION}
 ## $IMAGE_NAME var is injected into the build so the tag is correct.
 echo "[***] Build hook starting..."
 
-# $(echo "index.docker.io/user/respository" | cut -d '/' -f 3) = "repository"
-APPLICATION=$(echo "${DOCKER_REPO}" | cut -d '/' -f 3)
-
 echo "[---] DOCKERFILE_PATH:        ${DOCKERFILE_PATH}"
 echo "[---] DOCKER_REPO:            ${DOCKER_REPO}"
-echo "[---] IMAGE_NAME:             ${IMAGE_NAME}"
+echo "[---] IMAGE_NAME:             ${IMAGE_NAME}"spl
+
+# $(echo "index.docker.io/user/respository" | cut -d '/' -f 3) = "repository"
+if [ -z "$APPLICATION" ]; then
+    APPLICATION=$(echo "${DOCKER_REPO}" | cut -d '/' -f 3)
+fi
+
 echo "[---] APPLICATION:            ${APPLICATION}"
 
 # $(echo "index.docker.io/user/respository" | cut -d '/' -f 2-3) = "user/repository"
-GITHUB_USERREPO=$(echo "${DOCKER_REPO}" | cut -d '/' -f 2-3)
-
-# Set description from github
-DESCRIPTION=$(curl -s https://api.github.com/repos/${GITHUB_USERREPO} \
-    | grep '"description".*' \
-    | head -n 1 \
-    | cut -d '"' -f 4)
+if [ -z "$GITHUB_USERREPO" ]; then
+    GITHUB_USERREPO=$(echo "${DOCKER_REPO}" | cut -d '/' -f 2-3)
+fi
 
 echo "[---] GITHUB_USERREPO:        ${GITHUB_USERREPO}"
+
+# Set description from github
+if [ -z "$DESCRIPTION" ]; then
+    DESCRIPTION=$(curl -s https://api.github.com/repos/${GITHUB_USERREPO} \
+        | grep '"description".*' \
+        | head -n 1 \
+        | cut -d '"' -f 4)
+fi
+
 echo "[---] DESCRIPTION:            ${DESCRIPTION}"
 
 # Compiler setting
@@ -311,8 +317,20 @@ case "$IMAGE_NAME" in
     ?(*\-)excavator?(\-*))
         TARGET_ARCHITECTURE="excavator"
         ;;
+    ?(*\-)amd10h?(\-*))
+        TARGET_ARCHITECTURE="k8"
+        ;;
+    ?(*\-)amd11h?(\-*))
+        TARGET_ARCHITECTURE="k8"
+        ;;
+    ?(*\-)amd12h?(\-*))
+        TARGET_ARCHITECTURE="k8"
+        ;;
     ?(*\-)amd14h?(\-*))
         TARGET_ARCHITECTURE="amd14h"
+        ;;
+    ?(*\-)amd15h?(\-*))
+        TARGET_ARCHITECTURE="bulldozer"
         ;;
     ?(*\-)amd16h?(\-*))
         TARGET_ARCHITECTURE="amd16h"
@@ -334,11 +352,11 @@ shopt -u extglob;
 
 echo "[---] TARGET_ARCHITECTURE:    ${TARGET_ARCHITECTURE}"
 
-# Build with default numeric coefficient type
+# Build G+Smo with default numeric coefficient type
 shopt -s extglob;
 case "$IMAGE_NAME" in
     ?(*\-)float?(\-*))
-        GISMO_COEFF_TYPE="double"
+        GISMO_COEFF_TYPE="float"
         ;;
     ?(*\-)double?(\-*))
         GISMO_COEFF_TYPE="double"
@@ -349,7 +367,7 @@ case "$IMAGE_NAME" in
     ?(*\-)mpreal?(\-*))
         GISMO_COEFF_TYPE="mpfr::mpreal"
         ;;
-    ?(*\-)mpq?(\-*))
+    ?(*\-)mpq_class?(\-*))
         GISMO_COEFF_TYPE="mpq_class"
         ;;
     ?(*\-)posit_32_2?(\-*))
@@ -363,7 +381,7 @@ shopt -u extglob;
 
 echo "[---] GISMO_COEFF_TYPE:       ${GISMO_COEFF_TYPE}"
 
-# Build with default index type
+# Build G+Smo with default index type
 shopt -s extglob;
 case "$IMAGE_NAME" in
     ?(*\-)int?(\-*))
@@ -389,7 +407,76 @@ shopt -u extglob;
 
 echo "[---] GISMO_INDEX_TYPE:       ${GISMO_INDEX_TYPE}"
 
-# Build with Trilinos support
+
+# Build G+Smo examples
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)noexamples?(\-*))
+        GISMO_BUILD_EXAMPLES=OFF
+        ;;
+    ?(*\-)examples?(\-*))
+        GISMO_BUILD_EXAMPLES=ON
+        ;;
+    *)
+        GISMO_BUILD_EXAMPLES=ON
+        ;;
+esac
+shopt -u extglob;
+
+echo "[---] GISMO_BUILD_EXAMPLES:   ${GISMO_BUILD_EXAMPLES}"
+
+# Build G+Smo as library or in header-only mode
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nolib?(\-*))
+        GISMO_BUILD_LIB=OFF
+        ;;
+    ?(*\-)lib?(\-*))
+        GISMO_BUILD_LIB=ON
+        ;;
+    *)
+        GISMO_BUILD_LIB=ON
+        ;;
+esac
+shopt -u extglob;
+
+echo "[---] GISMO_BUILD_LIB:        ${GISMO_BUILD_LIB}"
+
+# Build G+Smo in precompiled header mode
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nopch?(\-*))
+        GISMO_BUILD_PCH=OFF
+        ;;
+    ?(*\-)pch?(\-*))
+        GISMO_BUILD_PCH=ON
+        ;;
+    *)
+        GISMO_BUILD_PCH=OFF
+        ;;
+esac
+shopt -u extglob;
+
+echo "[---] GISMO_BUILD_PCH:        ${GISMO_BUILD_PCH}"
+
+# Build G+Smo unittests
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nounittests?(\-*))
+        GISMO_BUILD_UNITTESTS=OFF
+        ;;
+    ?(*\-)unittests?(\-*))
+        GISMO_BUILD_UNITTESTS=ON
+        ;;
+    *)
+        GISMO_BUILD_UNITTESTS=OFF
+        ;;
+esac
+shopt -u extglob;
+
+echo "[---] GISMO_BUILD_UNITTESTS:  ${GISMO_BUILD_UNITTESTS}"
+
+# Build G+Smo with Trilinos support (must be before checking for MPI support)
 shopt -s extglob;
 case "$IMAGE_NAME" in
     ?(*\-)trilinos?(\-*))
@@ -402,7 +489,7 @@ case "$IMAGE_NAME" in
 esac
 shopt -u extglob;
 
-# Build with OpenMP support
+# Build G+Smo with OpenMP support
 shopt -s extglob;
 case "$IMAGE_NAME" in
     ?(*\-)clang?(\-*)|?(*\-)noomp?(\-*))
@@ -417,7 +504,7 @@ case "$IMAGE_NAME" in
 esac
 shopt -u extglob;
 
-# Build with MPI support
+# Build G+Smo with MPI support
 shopt -s extglob;
 case "$IMAGE_NAME" in
     ?(*\-)nompi?(\-*))
@@ -427,65 +514,302 @@ case "$IMAGE_NAME" in
         GISMO_WITH_MPI=ON
         ;;
     *)
-        if [ -n {GISMO_WITH_MPI+x} ]; then
+        if [ -z "$GISMO_WITH_MPI" ]; then
             GISMO_WITH_MPI=OFF
         fi
         ;;
 esac
 shopt -u extglob;
 
-if [[ "${GISMO_WITH_TRILINOS}" == "ON" && "${GISMO_WITH_MPI}" != "ON" ]]; then
-    echo "[***] Compiling G+Smo with Trilinos support enabled requires GISMO_WITH_MPI=ON"
+# Build G+Smo with CoDiPack support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nocodipack?(\-*))
+        GISMO_WITH_CODIPACK=OFF
+        ;;
+    ?(*\-)codipack?(\-*))
+        GISMO_WITH_CODIPACK=ON
+        ;;
+    *)
+        GISMO_WITH_CODIPACK=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with IPOpt support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)noipopt?(\-*))
+        GISMO_WITH_IPOPT=OFF
+        ;;
+    ?(*\-)ipopt?(\-*))
+        GISMO_WITH_IPOPT=ON
+        ;;
+    *)
+        GISMO_WITH_IPOPT=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with MPFR support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nompfr?(\-*))
+        GISMO_WITH_MPFR=OFF
+        ;;
+    ?(*\-)mpfr?(\-*))
+        GISMO_WITH_MPFR=ON
+        ;;
+    *)
+        GISMO_WITH_MPFR=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with MPQ support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nompq?(\-*))
+        GISMO_WITH_MPQ=OFF
+        ;;
+    ?(*\-)mpq?(\-*))
+        GISMO_WITH_MPQ=ON
+        ;;
+    *)
+        GISMO_WITH_MPQ=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with OpenNURBS support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nonurbs?(\-*))
+        GISMO_WITH_ONURBS=OFF
+        ;;
+    ?(*\-)onurbs?(\-*))
+        GISMO_WITH_ONURBS=ON
+        ;;
+    *)
+        GISMO_WITH_ONURBS=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with Pardiso support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nopardiso?(\-*))
+        GISMO_WITH_PARDISO=OFF
+        ;;
+    ?(*\-)pardiso?(\-*))
+        GISMO_WITH_PARDISO=ON
+        ;;
+    *)
+        GISMO_WITH_PARDISO=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with Pastix support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nopastix?(\-*))
+        GISMO_WITH_PASTIX=OFF
+        ;;
+    ?(*\-)pastix?(\-*))
+        GISMO_WITH_PASTIX=ON
+        ;;
+    *)
+        GISMO_WITH_PASTIX=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with PSOLID support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nopsolid?(\-*))
+        GISMO_WITH_PSOLID=OFF
+        ;;
+    ?(*\-)psolid?(\-*))
+        GISMO_WITH_PSOLID=ON
+        ;;
+    *)
+        GISMO_WITH_PSOLID=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with Spectra support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nospectra?(\-*))
+        GISMO_WITH_SPECTRA=OFF
+        ;;
+    ?(*\-)spectra?(\-*))
+        GISMO_WITH_SPECTRA=ON
+        ;;
+    *)
+        GISMO_WITH_SPECTRA=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with SuperLU support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nosuperlu?(\-*))
+        GISMO_WITH_SUPERLU=OFF
+        ;;
+    ?(*\-)superlu?(\-*))
+        GISMO_WITH_SUPERLU=ON
+        ;;
+    *)
+        GISMO_WITH_SUPERLU=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with TAUCS support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)notaucs?(\-*))
+        GISMO_WITH_TAUCS=OFF
+        ;;
+    ?(*\-)taucs?(\-*))
+        GISMO_WITH_TAUCS=ON
+        ;;
+    *)
+        GISMO_WITH_TAUCS=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with UMFPACK support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)noumfpack?(\-*))
+        GISMO_WITH_UMFPACK=OFF
+        ;;
+    ?(*\-)umfpack?(\-*))
+        GISMO_WITH_UMFPACK=ON
+        ;;
+    *)
+        GISMO_WITH_UMFPACK=ON
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with UNUM support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nounum?(\-*))
+        GISMO_WITH_UNUM=OFF
+        ;;
+    ?(*\-)unum?(\-*))
+        GISMO_WITH_UNUM=ON
+        ;;
+    *)
+        GISMO_WITH_UNUM=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with OpenCascade support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)noocc?(\-*))
+        GISMO_WITH_OCC=OFF
+        ;;
+    ?(*\-)occ?(\-*))
+        GISMO_WITH_OCC=ON
+        ;;
+    *)
+        GISMO_WITH_OCC=OFF
+        ;;
+esac
+shopt -u extglob;
+
+# Build G+Smo with Surface Mesh support
+shopt -s extglob;
+case "$IMAGE_NAME" in
+    ?(*\-)nosmesh?(\-*))
+        GISMO_WITH_SMESH=OFF
+        ;;
+    ?(*\-)smesh?(\-*))
+        GISMO_WITH_SMESH=ON
+        ;;
+    *)
+        GISMO_WITH_SMESH=OFF
+        ;;
+esac
+shopt -u extglob;
+
+echo "[---] GISMO_WITH_CODIPACK:    ${GISMO_WITH_CODIPACK}"
+echo "[---] GISMO_WITH_IPOPT:       ${GISMO_WITH_IPOPT}"
+echo "[---] GISMO_WITH_MPFR:        ${GISMO_WITH_MPFR}"
+echo "[---] GISMO_WITH_MPI:         ${GISMO_WITH_MPI}"
+echo "[---] GISMO_WITH_MPQ:         ${GISMO_WITH_MPQ}"
+echo "[---] GISMO_WITH_OCC:         ${GISMO_WITH_OCC}"
+echo "[---] GISMO_WITH_ONURBS:      ${GISMO_WITH_ONURBS}"
+echo "[---] GISMO_WITH_OPENMP:      ${GISMO_WITH_OPENMP}"
+echo "[---] GISMO_WITH_PARDISO:     ${GISMO_WITH_PARDISO}"
+echo "[---] GISMO_WITH_PASTIX:      ${GISMO_WITH_PASTIX}"
+echo "[---] GISMO_WITH_PSOLID:      ${GISMO_WITH_PSOLID}"
+echo "[---] GISMO_WITH_SMESH:       ${GISMO_WITH_SMESH}"
+echo "[---] GISMO_WITH_SPECTRA:     ${GISMO_WITH_SPECTRA}"
+echo "[---] GISMO_WITH_SUPERLU:     ${GISMO_WITH_SUPERLU}"
+echo "[---] GISMO_WITH_TAUCS:       ${GISMO_WITH_TAUCS}"
+echo "[---] GISMO_WITH_TRILINOS:    ${GISMO_WITH_TRILINOS}"
+echo "[---] GISMO_WITH_UMFPACK:     ${GISMO_WITH_UMFPACK}"
+echo "[---] GISMO_WITH_UNUM:        ${GISMO_WITH_UNUM}"
+
+if [[ "${GISMO_WITH_TRILINOS}" == "ON" && ("${GISMO_WITH_MPI}" != "ON" || -z "$FC") ]]; then
+    echo "[***] Compiling G+Smo with Trilinos support enabled requires GISMO_WITH_MPI=ON and the Fortran compiler FC to be set"
     exit 1
 fi
 
-echo "[---] GISMO_WITH_OPENMP:      ${GISMO_WITH_OPENMP}"
-echo "[---] GISMO_WITH_MPI:         ${GISMO_WITH_MPI}"
-echo "[---] GISMO_WITH_TRILINOS:    ${GISMO_WITH_TRILINOS}"
-
 ## Build the prime image at the end.
-if [ -z "$FC" ]
-then
-    docker build \
-           --file "${DOCKERFILE_PATH}" \
-           --build-arg APPLICATION=${APPLICATION} \
-           --build-arg BUILD_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-           --build-arg COMMIT=$(git rev-parse --short HEAD) \
-           --build-arg DESCRIPTION="${DESCRIPTION}" \
-           --build-arg VERSION=$(git describe --tags --always) \
-           --build-arg CC=${CC} \
-           --build-arg CXX=${CXX} \
-           --build-arg FC=${FC} \
-           --build-arg CMAKE_BUILD_TYPE=${GISMO_BUILD_TYPE} \
-           --build-arg CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} \
-           --build-arg GISMO_COEFF_TYPE=${GISMO_COEFF_TYPE} \
-           --build-arg GISMO_INDEX_TYPE=${GISMO_INDEX_TYPE} \
-           --build-arg GISMO_WITH_MPI=${GISMO_WITH_MPI} \
-           --build-arg GISMO_WITH_OPENMP=${GISMO_WITH_OPENMP} \
-           --build-arg GISMO_WITH_TRILINOS=${GISMO_WITH_TRILINOS} \
-           --build-arg TARGET_ARCHITECTURE=${TARGET_ARCHITECTURE} \
-           -t ${IMAGE_NAME} \
-           .
-else
-    docker build \
-           --file "${DOCKERFILE_PATH}" \
-           --build-arg APPLICATION=${APPLICATION} \
-           --build-arg BUILD_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-           --build-arg COMMIT=$(git rev-parse --short HEAD) \
-           --build-arg DESCRIPTION="${DESCRIPTION}" \
-           --build-arg VERSION=$(git describe --tags --always) \
-           --build-arg CC=${CC} \
-           --build-arg CXX=${CXX} \
-           --build-arg CMAKE_BUILD_TYPE=${GISMO_BUILD_TYPE} \
-           --build-arg CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} \
-           --build-arg GISMO_COEFF_TYPE=${GISMO_COEFF_TYPE} \
-           --build-arg GISMO_INDEX_TYPE=${GISMO_INDEX_TYPE} \
-           --build-arg GISMO_WITH_MPI=${GISMO_WITH_MPI} \
-           --build-arg GISMO_WITH_OPENMP=${GISMO_WITH_OPENMP} \
-           --build-arg TARGET_ARCHITECTURE=${TARGET_ARCHITECTURE} \
-           -t ${IMAGE_NAME} \
-           .
-fi
+docker build \
+    --file "${DOCKERFILE_PATH}" \
+    --build-arg APPLICATION=${APPLICATION} \
+    --build-arg BUILD_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+    --build-arg COMMIT=$(git rev-parse --short HEAD) \
+    --build-arg DESCRIPTION="${DESCRIPTION}" \
+    --build-arg VERSION=$(git describe --tags --always) \
+    --build-arg CC=${CC} \
+    --build-arg CXX=${CXX} \
+    --build-arg FC=${FC} \
+    --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
+    --build-arg CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} \
+    --build-arg GISMO_BUILD_EXAMPLES=${GISMO_BUILD_EXAMPLES} \
+    --build-arg GISMO_BUILD_LIB=${GISMO_BUILD_LIB} \
+    --build-arg GISMO_BUILD_PCH=${GISMO_BUILD_PCH} \
+    --build-arg GISMO_BUILD_UNITTESTS=${GISMO_BUILD_UNITTESTS} \
+    --build-arg GISMO_COEFF_TYPE=${GISMO_COEFF_TYPE} \
+    --build-arg GISMO_INDEX_TYPE=${GISMO_INDEX_TYPE} \
+    --build-arg GISMO_WITH_CODIPACK=${GISMO_WITH_CODIPACK} \
+    --build-arg GISMO_WITH_IPOPT=${GISMO_WITH_IPOPT} \
+    --build-arg GISMO_WITH_MPFR=${GISMO_WITH_MPFR} \
+    --build-arg GISMO_WITH_MPI=${GISMO_WITH_MPI} \
+    --build-arg GISMO_WITH_MPQ=${GISMO_WITH_MPQ} \
+    --build-arg GISMO_WITH_OCC=${GISMO_WITH_OCC} \
+    --build-arg GISMO_WITH_ONURBS=${GISMO_WITH_ONURBS} \
+    --build-arg GISMO_WITH_OPENMP=${GISMO_WITH_OPENMP} \
+    --build-arg GISMO_WITH_PARDISO=${GISMO_WITH_PARDISO} \
+    --build-arg GISMO_WITH_PASTIX=${GISMO_WITH_PASTIX} \
+    --build-arg GISMO_WITH_PSOLID=${GISMO_WITH_PSOLID} \
+    --build-arg GISMO_WITH_SMESH=${GISMO_WITH_SMESH} \
+    --build-arg GISMO_WITH_SPECTRA=${GISMO_WITH_SPECTRA} \
+    --build-arg GISMO_WITH_SUPERLU=${GISMO_WITH_SUPERLU} \
+    --build-arg GISMO_WITH_TAUCS=${GISMO_WITH_TAUCS} \
+    --build-arg GISMO_WITH_TRILINOS=${GISMO_WITH_TRILINOS} \
+    --build-arg GISMO_WITH_UMFPACK=${GISMO_WITH_UMFPACK} \
+    --build-arg GISMO_WITH_UNUM=${GISMO_WITH_UNUM} \
+    --build-arg TARGET_ARCHITECTURE=${TARGET_ARCHITECTURE} \
+    -t ${IMAGE_NAME} \
+    .
 
 ## Push image
 docker push ${IMAGE_NAME}
