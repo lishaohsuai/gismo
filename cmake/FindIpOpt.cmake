@@ -15,11 +15,13 @@ find_path(IPOPT_INCLUDE_DIR NAMES IpTNLP.hpp HINTS /usr/include/coin ${CMAKE_CUR
 find_library(IPOPT_LIBRARY NAMES ipopt libipopt HINTS ${CMAKE_BINARY_DIR}/lib ${IpOpt_DIR}/lib ${IpOpt_DIR}/lib64 ${IpOpt_DIR}/Ipopt/src/Interfaces/.libs)
 
 if(IPOPT_INCLUDE_DIR AND IPOPT_LIBRARY)
-	get_filename_component(IPOPT_LIBRARY_DIR ${IPOPT_LIBRARY} PATH)
+   get_filename_component(IPOPT_LIBRARY_DIR ${IPOPT_LIBRARY} PATH)
    set(IPOPT_FOUND TRUE)
 endif()
 
 if(IPOPT_FOUND)
+      set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_STDDEF_H")
+      set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_CSTDDEF")
       #message("IPOPT_INCLUDE_DIR: ${IPOPT_INCLUDE_DIR}")
       #message("IPOPT_LIBRARY    : ${IPOPT_LIBRARY}")
    if(NOT IPOPT_FIND_QUIETLY)
