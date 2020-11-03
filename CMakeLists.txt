@@ -335,6 +335,11 @@ if(GISMO_EXASTENCILS)
   gismo_fetch_module(gsExaStencils)
 endif()
 
+option(GISMO_STRUCTURALANALYSIS "Enable Structural Analysis module" OFF)
+if(GISMO_STRUCTURALANALYSIS)
+  gismo_fetch_module(gsStructuralAnalysis)
+endif()
+
 option(GISMO_UNSUPPORTED "Enable unsupported module" OFF)
 option(GISMO_MOTOR "Enable motor module" OFF)
 if(GISMO_UNSUPPORTED OR GISMO_MOTOR)
